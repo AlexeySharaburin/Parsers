@@ -16,4 +16,5 @@ dependencies {
     compile 'com.opencsv:opencsv:5.1'
     compile 'com.googlecode.json-simple:json-simple:1.1.1'
     compile 'com.google.code.gson:gson:2.8.2'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.12.0-rc1'
 }

@@ -1,3 +1,7 @@
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -46,14 +50,46 @@ public class Main {
 
         parseXMLtoJSON(fileNameXML, fileNameJSON2);
 
-        parseJSON(fileNameJSON);
+        parseJSONbyGSON(fileNameJSON);
+
+        parseJSONbyJackson(fileNameJSON);
 
     }
 
+    public static List<Employee> jacksonToList(String stringJSON) throws ParseException, JsonProcessingException {
 
-    public static void parseJSON(String fileNameJSON) throws ParseException {
+        ObjectMapper mapper = new ObjectMapper();
+
+//        CollectionType javaType = mapper.getTypeFactory().constructCollectionType(List.class, Employee.class);
+//        List<Employee> list = mapper.readValue(stringJSON, javaType);
+
+        List<Employee> list = mapper.readValue(stringJSON,
+                new TypeReference<List<Employee>>() {
+        });
+
+//        JSONParser parser = new JSONParser();
+//        JSONArray jsonArray = (JSONArray) parser.parse(stringJSON);
+//        for (Object obj : jsonArray) {
+//            JSONObject jsonObject = (JSONObject) obj;
+//            Employee employee = mapper.readValue(String.valueOf(jsonObject), Employee.class);
+//            list.add(employee);
+//        }
+
+        return list;
+    }
+
+    public static void parseJSONbyJackson(String fileNameJSON) throws ParseException, JsonProcessingException {
+        String json = readString(fileNameJSON);
+        List<Employee> list = jacksonToList(json);
+        System.out.println("Convert Jackson:");
+        printEmployees(list);
+    }
+
+
+    public static void parseJSONbyGSON(String fileNameJSON) throws ParseException {
         String json = readString(fileNameJSON);
         List<Employee> list = jsonToList(json);
+        System.out.println("Convert GSON:");
         printEmployees(list);
     }
 
@@ -61,7 +97,7 @@ public class Main {
         String line;
         StringBuilder sb = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new FileReader(fileNameJSON))) {
-            while((line = br.readLine()) != null) {
+            while ((line = br.readLine()) != null) {
                 sb.append(line);
             }
         } catch (IOException e) {
@@ -92,7 +128,6 @@ public class Main {
             System.out.println(employee.toString());
         }
     }
-
 
     public static void parseXMLtoJSON(String fileNameXML, String fileNameJSON) throws IOException, SAXException, ParserConfigurationException {
         List<Employee> list = parseXML(fileNameXML);
